@@ -11,6 +11,11 @@ node_modules
 dist
 dist-ssr
 .output
+.cache/sports-data/
+.vercel
+.env
+.env.*
+!.env.example
 .vinxi
 .tanstack/**
 .nitro

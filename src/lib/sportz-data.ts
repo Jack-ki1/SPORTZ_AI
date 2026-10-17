@@ -13,14 +13,9 @@ export const SPORTS: {
   tagline: string;
   athlete: string;
   img: string;
-  nextLabel: string;
-  next: string;
-  date: string;
   grad: string;
   text: string;
   bg: string;
-  pick: string;
-  pickPct: number;
 }[] = [
   {
     key: "f1",
@@ -29,14 +24,9 @@ export const SPORTS: {
     tagline: "Race winner • Podium • Strategy",
     athlete: "Max Verstappen",
     img: f1,
-    nextLabel: "Next Race",
-    next: "Monaco GP",
-    date: "May 25, 2026",
     grad: "grad-f1",
     text: "text-f1",
     bg: "bg-f1",
-    pick: "Verstappen win",
-    pickPct: 33,
   },
   {
     key: "nba",
@@ -45,14 +35,9 @@ export const SPORTS: {
     tagline: "Win • Score • Player Impact",
     athlete: "Luka Dončić",
     img: nba,
-    nextLabel: "Next Game",
-    next: "Lakers vs Warriors",
-    date: "May 10, 2026",
     grad: "grad-nba",
     text: "text-nba",
     bg: "bg-nba",
-    pick: "Lakers win",
-    pickPct: 61,
   },
   {
     key: "epl",
@@ -61,14 +46,9 @@ export const SPORTS: {
     tagline: "1X2 • Goals • xG",
     athlete: "Bukayo Saka",
     img: epl,
-    nextLabel: "Next Match",
-    next: "Arsenal vs Man City",
-    date: "May 10, 2026",
     grad: "grad-epl",
     text: "text-epl",
     bg: "bg-epl",
-    pick: "Arsenal win",
-    pickPct: 57,
   },
   {
     key: "nfl",
@@ -77,14 +57,9 @@ export const SPORTS: {
     tagline: "Win • Score • QB Impact",
     athlete: "Patrick Mahomes",
     img: nfl,
-    nextLabel: "Next Game",
-    next: "Chiefs vs Bills",
-    date: "May 11, 2026",
     grad: "grad-nfl",
     text: "text-nfl",
     bg: "bg-nfl",
-    pick: "Chiefs win",
-    pickPct: 54,
   },
   {
     key: "mlb",
@@ -93,44 +68,15 @@ export const SPORTS: {
     tagline: "Win • Runs • Pitching Edge",
     athlete: "Shohei Ohtani",
     img: mlb,
-    nextLabel: "Next Game",
-    next: "Dodgers vs Yankees",
-    date: "May 10, 2026",
     grad: "grad-mlb",
     text: "text-mlb",
     bg: "bg-mlb",
-    pick: "Dodgers win",
-    pickPct: 58,
   },
 ];
 
 export const sport = (k: SportKey) => SPORTS.find((s) => s.key === k)!;
-
-export const LIVE = [
-  { k: "f1" as SportKey, event: "Monaco GP", score: "P1 VER", state: "Lap 42/78", move: 4.8 },
-  {
-    k: "nba" as SportKey,
-    event: "Lakers vs Warriors",
-    score: "102 – 98",
-    state: "Q4 3:12",
-    move: 2.1,
-  },
-  { k: "epl" as SportKey, event: "Arsenal vs Man City", score: "2 – 1", state: "78'", move: 3.6 },
-  {
-    k: "nfl" as SportKey,
-    event: "Chiefs vs Bills",
-    score: "21 – 17",
-    state: "Q3 6:45",
-    move: -1.2,
-  },
-  {
-    k: "mlb" as SportKey,
-    event: "Dodgers vs Yankees",
-    score: "4 – 3",
-    state: "Bot 7th",
-    move: 1.9,
-  },
-];
+export const isSportKey = (value: unknown): value is SportKey =>
+  typeof value === "string" && SPORTS.some((item) => item.key === value);
 
 export const FACTORS = [
   { name: "Form", v: 28 },
@@ -218,80 +164,6 @@ export const PLAYERS: Record<
     ],
   },
 };
-
-export const MODELS = [
-  {
-    name: "Elo / Glicko",
-    desc: "Rating system",
-    score: 0.201,
-    sport: "All",
-    ver: "v2.3",
-    trained: "6h ago",
-    status: "Healthy",
-  },
-  {
-    name: "XGBoost",
-    desc: "Win probability",
-    score: 0.188,
-    sport: "NBA · NFL",
-    ver: "v1.9",
-    trained: "2h ago",
-    status: "Healthy",
-  },
-  {
-    name: "Gradient Boosting",
-    desc: "Feature learning",
-    score: 0.192,
-    sport: "EPL · MLB",
-    ver: "v1.6",
-    trained: "4h ago",
-    status: "Healthy",
-  },
-  {
-    name: "Random Forest",
-    desc: "Baseline ensemble",
-    score: 0.207,
-    sport: "All",
-    ver: "v1.2",
-    trained: "1d ago",
-    status: "Retraining",
-  },
-  {
-    name: "Neural Network",
-    desc: "Sequence model",
-    score: 0.196,
-    sport: "F1 · NBA",
-    ver: "v0.8",
-    trained: "9h ago",
-    status: "Healthy",
-  },
-  {
-    name: "Monte Carlo",
-    desc: "Simulation",
-    score: 0.185,
-    sport: "F1",
-    ver: "v3.0",
-    trained: "1h ago",
-    status: "Healthy",
-  },
-  {
-    name: "SPORTZ Ensemble",
-    desc: "Stacked blend",
-    score: 0.172,
-    sport: "All",
-    ver: "v1.4",
-    trained: "1h ago",
-    status: "Production",
-  },
-];
-
-export const TRUST = [
-  { k: "f1" as SportKey, src: "Jolpica / OpenF1 / FastF1", ago: "3 min ago", complete: 99 },
-  { k: "nba" as SportKey, src: "Sports data provider", ago: "4 min ago", complete: 97 },
-  { k: "epl" as SportKey, src: "Football data provider", ago: "5 min ago", complete: 96 },
-  { k: "nfl" as SportKey, src: "Sports data provider", ago: "2 min ago", complete: 98 },
-  { k: "mlb" as SportKey, src: "Sports data provider", ago: "3 min ago", complete: 95 },
-];
 
 // Season simulator strength inputs (demo)
 export const SEASON: Record<SportKey, { label: string; teams: [string, number][] }> = {

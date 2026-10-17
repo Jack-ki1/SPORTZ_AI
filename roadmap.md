@@ -1,1 +1,0 @@
-- [x] Give each nav section its own page

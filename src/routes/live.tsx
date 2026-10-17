@@ -1,7 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { Shell, Wrap } from "@/components/sportz/shell";
-import { FeaturedAndLive } from "@/components/sportz/top";
-import { DataTrust, SeasonSim } from "@/components/sportz/bottom";
+import { Shell } from "@/components/sportz/shell";
+import { LiveWorkspace } from "@/components/sportz/workspaces";
 
 export const Route = createFileRoute("/live")({
   head: () => ({
@@ -18,12 +17,8 @@ export const Route = createFileRoute("/live")({
     ],
   }),
   component: () => (
-    <Shell title="Live Center" sub="Real-time scores and model movement across five sports.">
-      <FeaturedAndLive />
-      <Wrap cols="lg:grid-cols-2">
-        <DataTrust />
-        <SeasonSim />
-      </Wrap>
+    <Shell>
+      <LiveWorkspace />
     </Shell>
   ),
 });

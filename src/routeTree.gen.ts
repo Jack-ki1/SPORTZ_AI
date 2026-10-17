@@ -16,6 +16,7 @@ import { Route as LabRouteImport } from './routes/lab'
 import { Route as LiveRouteImport } from './routes/live'
 import { Route as MatchupsRouteImport } from './routes/matchups'
 import { Route as PredictionsRouteImport } from './routes/predictions'
+import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as SimulatorRouteImport } from './routes/simulator'
 import { Route as WatchlistRouteImport } from './routes/watchlist'
 
@@ -54,6 +55,11 @@ const PredictionsRoute = PredictionsRouteImport.update({
   path: '/predictions',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SettingsRoute = SettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SimulatorRoute = SimulatorRouteImport.update({
   id: '/simulator',
   path: '/simulator',
@@ -73,6 +79,7 @@ export interface FileRoutesByFullPath {
   '/live': typeof LiveRoute
   '/matchups': typeof MatchupsRoute
   '/predictions': typeof PredictionsRoute
+  '/settings': typeof SettingsRoute
   '/simulator': typeof SimulatorRoute
   '/watchlist': typeof WatchlistRoute
 }
@@ -84,6 +91,7 @@ export interface FileRoutesByTo {
   '/live': typeof LiveRoute
   '/matchups': typeof MatchupsRoute
   '/predictions': typeof PredictionsRoute
+  '/settings': typeof SettingsRoute
   '/simulator': typeof SimulatorRoute
   '/watchlist': typeof WatchlistRoute
 }
@@ -96,6 +104,7 @@ export interface FileRoutesById {
   '/live': typeof LiveRoute
   '/matchups': typeof MatchupsRoute
   '/predictions': typeof PredictionsRoute
+  '/settings': typeof SettingsRoute
   '/simulator': typeof SimulatorRoute
   '/watchlist': typeof WatchlistRoute
 }
@@ -109,6 +118,7 @@ export interface FileRouteTypes {
     | '/live'
     | '/matchups'
     | '/predictions'
+    | '/settings'
     | '/simulator'
     | '/watchlist'
   fileRoutesByTo: FileRoutesByTo
@@ -120,6 +130,7 @@ export interface FileRouteTypes {
     | '/live'
     | '/matchups'
     | '/predictions'
+    | '/settings'
     | '/simulator'
     | '/watchlist'
   id:
@@ -131,6 +142,7 @@ export interface FileRouteTypes {
     | '/live'
     | '/matchups'
     | '/predictions'
+    | '/settings'
     | '/simulator'
     | '/watchlist'
   fileRoutesById: FileRoutesById
@@ -143,6 +155,7 @@ export interface RootRouteChildren {
   LiveRoute: typeof LiveRoute
   MatchupsRoute: typeof MatchupsRoute
   PredictionsRoute: typeof PredictionsRoute
+  SettingsRoute: typeof SettingsRoute
   SimulatorRoute: typeof SimulatorRoute
   WatchlistRoute: typeof WatchlistRoute
 }
@@ -198,6 +211,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PredictionsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/settings': {
+      id: '/settings'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof SettingsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/simulator': {
       id: '/simulator'
       path: '/simulator'
@@ -223,19 +243,10 @@ const rootRouteChildren: RootRouteChildren = {
   LiveRoute: LiveRoute,
   MatchupsRoute: MatchupsRoute,
   PredictionsRoute: PredictionsRoute,
+  SettingsRoute: SettingsRoute,
   SimulatorRoute: SimulatorRoute,
   WatchlistRoute: WatchlistRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}

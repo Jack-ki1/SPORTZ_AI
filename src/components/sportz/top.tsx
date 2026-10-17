@@ -2,19 +2,17 @@ import { useEffect, useState } from "react";
 import { ArrowRight, Search, Sparkles, SlidersHorizontal, Activity } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Link } from "@tanstack/react-router";
-import { SPORTS, LIVE, FACTORS, sport } from "@/lib/sportz-data";
-import { Btn, Card, DemoTag, Ring, SectionTitle, Sparkline, SportBadge } from "./ui";
+import { SPORTS, FACTORS, sport } from "@/lib/sportz-data";
+import { getScoreboards, type ScoreboardEvent } from "@/lib/api-client";
+import { Btn, Card, DemoTag, Ring, SectionTitle, SportBadge } from "./ui";
 
 const NAV = [
   ["Home", "/"],
   ["Predictions", "/predictions"],
   ["Live Center", "/live"],
   ["Matchups", "/matchups"],
-  ["AI Copilot", "/copilot"],
-  ["Model Lab", "/lab"],
-  ["Backtests", "/backtests"],
   ["Watchlist", "/watchlist"],
-  ["Simulator", "/simulator"],
+  ["Settings", "/settings"],
 ] as const;
 
 export function Logo() {
@@ -72,7 +70,7 @@ export function Nav() {
         <div className="ml-auto flex items-center gap-3">
           <span className="hidden items-center gap-1.5 rounded-full bg-up/10 px-3 py-1 text-[11px] font-bold text-up sm:flex">
             <span className="live-dot h-1.5 w-1.5 rounded-full bg-up" />
-            LIVE
+            SPORTS
           </span>
           <label className="hidden items-center gap-2 rounded-full border border-border bg-soft px-3 py-1.5 xl:flex">
             <Search className="h-3.5 w-3.5 text-muted-foreground" />
@@ -112,17 +110,17 @@ export function Hero() {
     >
       <div>
         <h1 className="text-5xl font-black leading-[0.92] text-navy md:text-6xl xl:text-7xl">
-          AI THAT
+          SPORTS DATA
           <br />
-          UNDERSTANDS
+          MADE CLEAR
           <br />
-          <span className="text-game">THE GAME</span>
+          <span className="text-game">FOR THE GAME</span>
         </h1>
-        <p className="mt-5 text-lg font-bold text-navy">Five sports. One intelligence layer.</p>
+        <p className="mt-5 text-lg font-bold text-navy">Five sports. One scoreboard layer.</p>
         <p className="mt-2 max-w-md text-sm leading-relaxed text-muted-foreground">
-          SPORTZ_AI uses advanced AI, real-time sports data, predictive analytics and simulation to
-          deliver intelligent forecasts, insights and explanations across Formula 1, NBA, EPL, NFL
-          and MLB.
+          SPORTZ_AI brings together provider scoreboards and historical Elo forecasts across Formula
+          1, NBA, EPL, NFL and MLB. Trained model forecasts will appear when validated models and
+          licensed historical data are connected.
         </p>
         <div className="mt-6 flex flex-wrap gap-3">
           <Link to="/predictions">
@@ -178,7 +176,7 @@ export function ChooseSport() {
     <section id="predictions" className="mx-auto max-w-[1560px] px-4 md:px-8">
       <SectionTitle
         title="Choose Your Sport"
-        sub="Get AI-powered predictions, insights and analysis for your favourite sport."
+        sub="Choose a sport to explore its provider scoreboard and historical Elo forecast model."
         right={
           <Link to="/predictions" className="text-sm font-semibold text-primary">
             View All Sports →
@@ -207,13 +205,13 @@ export function ChooseSport() {
                 <p className="max-w-[9rem] text-[11px] font-semibold opacity-90">{s.tagline}</p>
               </div>
               <span className="absolute bottom-3 left-3 rounded-full bg-background/90 px-2 py-0.5 text-[10px] font-bold text-navy">
-                {s.pick} · {s.pickPct}%
+                Scoreboard · {s.short}
               </span>
             </div>
             <div className="p-4">
-              <p className="text-[11px] text-muted-foreground">{s.nextLabel}</p>
-              <p className={cn("text-sm font-bold", s.text)}>{s.next}</p>
-              <p className="text-xs text-muted-foreground">{s.date}</p>
+              <p className="text-[11px] text-muted-foreground">{s.name}</p>
+              <p className={cn("text-sm font-bold", s.text)}>{s.tagline}</p>
+              <p className="text-xs text-muted-foreground">View provider schedule</p>
             </div>
           </Link>
         ))}
@@ -222,168 +220,164 @@ export function ChooseSport() {
   );
 }
 
-const rand = (n: number, seed: number) =>
-  Array.from(
-    { length: n },
-    (_, i) => 50 + Math.sin(i * 0.9 + seed) * 10 + i * 1.5 + ((i * seed) % 5),
-  );
-
 export function FeaturedAndLive() {
-  const [rows, setRows] = useState(LIVE.map((r, i) => ({ ...r, spark: rand(12, i + 1) })));
+  const [events, setEvents] = useState<ScoreboardEvent[]>([]);
+  const [feedState, setFeedState] = useState<"loading" | "ready" | "partial" | "unavailable">(
+    "loading",
+  );
+  const [fetchedAt, setFetchedAt] = useState<string | null>(null);
   useEffect(() => {
-    const t = setInterval(
-      () =>
-        setRows((rs) =>
-          rs.map((r) => {
-            const d = (Math.random() - 0.45) * 0.4;
-            const spark = [...r.spark.slice(1), (r.spark[r.spark.length - 1] ?? 50) + d * 10];
-            return { ...r, move: +(r.move + d).toFixed(1), spark };
-          }),
-        ),
-      2500,
-    );
-    return () => clearInterval(t);
+    let active = true;
+    const refresh = async () => {
+      try {
+        const response = await getScoreboards();
+        if (!active) return;
+        setEvents(response.results.flatMap((result) => result.events));
+        setFetchedAt(response.fetchedAt);
+        const available = response.results.filter((result) => result.status === "ok").length;
+        setFeedState(
+          available === response.results.length
+            ? "ready"
+            : available > 0
+              ? "partial"
+              : "unavailable",
+        );
+      } catch {
+        if (active) setFeedState("unavailable");
+      }
+    };
+    void refresh();
+    const timer = window.setInterval(refresh, 60_000);
+    return () => {
+      active = false;
+      window.clearInterval(timer);
+    };
   }, []);
+  const featured = events.find((event) => event.state === "scheduled" && event.baseline);
+  const liveEvents = events.filter((event) => event.state === "live");
   return (
     <section className="mx-auto mt-6 grid max-w-[1560px] gap-5 px-4 md:px-8 xl:grid-cols-[1.25fr_1fr]">
       <Card>
-        <SectionTitle title="Featured Prediction" right={<DemoTag />} />
-        <div className="mb-4 flex items-center gap-2 text-xs text-muted-foreground">
-          <SportBadge grad="grad-epl" label="EPL" size="sm" /> Today · 16:30 · Premier League
-        </div>
-        <div className="grid gap-6 md:grid-cols-[1fr_220px]">
-          <div>
-            <div className="flex items-center justify-around gap-2">
-              <Team name="Arsenal" short="ARS" />
-              <Ring pct={57} size={150}>
-                <span className="num text-4xl font-black text-navy">57%</span>
-                <span className="text-[10px] font-bold tracking-wider text-muted-foreground">
-                  HOME WIN
-                </span>
-              </Ring>
-              <Team name="Man City" short="MCI" />
-            </div>
-            <div className="mt-5 grid grid-cols-3 text-center">
-              {[
-                ["57%", "Home Win", "text-primary"],
-                ["26%", "Draw", "text-navy"],
-                ["17%", "Away Win", "text-navy"],
-              ].map(([v, l, c]) => (
-                <div key={l}>
-                  <p className={cn("num text-2xl font-black", c)}>{v}</p>
-                  <p className="text-xs text-muted-foreground">{l}</p>
-                </div>
-              ))}
-            </div>
-            <div className="mt-4 flex justify-between rounded-xl bg-soft px-4 py-2">
-              <div>
-                <p className="text-[10px] text-muted-foreground">Home win trend · 7d</p>
-                <Sparkline data={[48, 50, 49, 52, 54, 55, 57]} className="w-28" />
-              </div>
-              <div>
-                <p className="text-[10px] text-muted-foreground">Market consensus</p>
-                <Sparkline data={[52, 51, 53, 52, 52, 53, 53]} className="w-28" />
-              </div>
-            </div>
-          </div>
-          <div className="space-y-4 border-border md:border-l md:pl-6">
-            <Stat
-              label="Projected Score"
-              value={<span className="text-primary">2 – 1</span>}
-              note="(Arsenal)"
-            />
-            <div>
-              <Stat
-                label="Confidence"
-                value={
-                  <>
-                    78<span className="text-base text-muted-foreground">/100</span>
-                  </>
-                }
+        <SectionTitle title="Upcoming Model Forecast" right={<DemoTag label="HISTORICAL ELO" />} />
+        {featured ? (
+          <div className="space-y-4">
+            <div className="flex items-center gap-2 text-xs text-muted-foreground">
+              <SportBadge
+                grad={sport(featured.sport).grad}
+                label={sport(featured.sport).short}
+                size="sm"
               />
-              <div className="mt-1.5 h-2 rounded-full bg-muted">
-                <div className="h-2 w-[78%] rounded-full bg-up" />
-              </div>
+              {featured.league} ·{" "}
+              {featured.startTime
+                ? new Date(featured.startTime).toLocaleString()
+                : "Start time unavailable"}
             </div>
-            <Stat
-              label="Data Freshness"
-              value={<span className="text-base text-up">3 min ago</span>}
-            />
-            <Stat label="Model" value={<span className="text-sm">SPORTZ Ensemble v1.4</span>} />
-            <Link to="/matchups">
-              <Btn className="w-full">
-                Explain Prediction <ArrowRight className="h-4 w-4" />
-              </Btn>
-            </Link>
+            <p className="text-lg font-bold text-navy">{featured.name}</p>
+            <p className="text-xs text-muted-foreground">
+              Historical Elo probabilities. They are not betting advice and are not guaranteed to be
+              calibrated.
+            </p>
+            {featured.competitors.map((team, index) => (
+              <div key={team.name}>
+                <div className="mb-1 flex justify-between text-sm">
+                  <span className="font-semibold text-navy">
+                    {team.name}{" "}
+                    <span className="text-muted-foreground">
+                      {team.record ? `(${team.record})` : ""}
+                    </span>
+                  </span>
+                  <b className="num text-primary">
+                    {featured.baseline?.[index] ?? team.probability ?? 0}%
+                  </b>
+                </div>
+                <div className="h-2 rounded-full bg-muted">
+                  <div
+                    className="h-2 rounded-full bg-primary"
+                    style={{ width: `${featured.baseline?.[index] ?? team.probability ?? 0}%` }}
+                  />
+                </div>
+              </div>
+            ))}
+            {featured.drawProbability != null && (
+              <div>
+                <div className="mb-1 flex justify-between text-sm">
+                  <span className="font-semibold text-navy">Draw</span>
+                  <b className="num text-primary">{featured.drawProbability}%</b>
+                </div>
+                <div className="h-2 rounded-full bg-muted">
+                  <div
+                    className="h-2 rounded-full bg-primary"
+                    style={{ width: `${featured.drawProbability}%` }}
+                  />
+                </div>
+              </div>
+            )}
+            <p className="text-[11px] text-muted-foreground">
+              Model: {featured.model} · source feed refreshed{" "}
+              {fetchedAt ? new Date(fetchedAt).toLocaleTimeString() : "—"}
+            </p>
           </div>
-        </div>
+        ) : (
+          <p className="rounded-xl bg-soft p-4 text-sm text-muted-foreground">
+            {feedState === "loading"
+              ? "Loading provider schedule…"
+              : feedState === "unavailable"
+                ? "Scoreboard provider is unavailable. No forecast is shown."
+                : feedState === "partial"
+                  ? "Some scoreboard feeds are unavailable. No forecast is shown without a complete event record."
+                  : "No upcoming event with team records is currently available. No forecast is shown."}
+          </p>
+        )}
       </Card>
       <Card id="live">
-        <SectionTitle title="Live Center" right={<DemoTag label="SIMULATED FEED" />} />
-        <div className="grid grid-cols-[auto_1fr_auto_auto] items-center gap-x-3 gap-y-1 text-[11px] font-semibold text-muted-foreground sm:grid-cols-[auto_1fr_auto_auto_auto]">
+        <SectionTitle title="Live Center" right={<DemoTag label="PROVIDER FEEDS" />} />
+        <div className="grid grid-cols-[auto_1fr_auto] items-center gap-x-3 gap-y-1 text-[11px] font-semibold text-muted-foreground sm:grid-cols-[auto_1fr_auto_auto]">
           <span>Sport</span>
           <span>Match / Event</span>
           <span className="hidden sm:block">Score</span>
           <span>Status</span>
-          <span className="text-right">Momentum</span>
         </div>
         <div className="mt-2 divide-y divide-border">
-          {rows.map((r) => {
-            const s = sport(r.k);
+          {liveEvents.map((event) => {
+            const s = sport(event.sport);
             return (
               <div
-                key={r.k}
-                className="grid grid-cols-[auto_1fr_auto_auto] items-center gap-x-3 py-3 sm:grid-cols-[auto_1fr_auto_auto_auto]"
+                key={event.id}
+                className="grid grid-cols-[auto_1fr_auto] items-center gap-x-3 py-3 sm:grid-cols-[auto_1fr_auto_auto]"
               >
                 <SportBadge grad={s.grad} label={s.short} size="sm" />
                 <div className="min-w-0">
-                  <p className="truncate text-sm font-bold text-navy">{r.event}</p>
-                  <p className="text-[11px] text-muted-foreground">{r.state}</p>
+                  <p className="truncate text-sm font-bold text-navy">{event.shortName}</p>
+                  <p className="text-[11px] text-muted-foreground">{event.status}</p>
                 </div>
-                <span className="num hidden text-sm font-bold text-navy sm:block">{r.score}</span>
+                <span className="num hidden text-sm font-bold text-navy sm:block">
+                  {event.competitors.map((team) => team.score ?? "—").join(" – ")}
+                </span>
                 <span className="flex items-center gap-1 rounded-full bg-down/10 px-2 py-0.5 text-[10px] font-bold text-down">
                   <span className="live-dot h-1.5 w-1.5 rounded-full bg-down" />
                   Live
                 </span>
-                <div className="flex items-center justify-end gap-2">
-                  <span
-                    className={cn(
-                      "num w-12 text-right text-xs font-bold",
-                      r.move >= 0 ? "text-up" : "text-down",
-                    )}
-                  >
-                    {r.move >= 0 ? "+" : ""}
-                    {r.move}%
-                  </span>
-                  <Sparkline data={r.spark} up={r.move >= 0} className="hidden w-16 sm:block" />
-                </div>
               </div>
             );
           })}
+          {liveEvents.length === 0 && (
+            <p className="py-5 text-sm text-muted-foreground">
+              {feedState === "loading"
+                ? "Checking provider for live events…"
+                : feedState === "unavailable"
+                  ? "Live scores are unavailable because the provider could not be reached."
+                  : feedState === "partial"
+                    ? "Some scoreboard feeds are unavailable, and no live event was returned."
+                    : "No live events reported by the provider right now."}
+            </p>
+          )}
         </div>
+        <p className="mt-3 text-[10px] text-muted-foreground">
+          Provider scoreboards · refreshed{" "}
+          {fetchedAt ? new Date(fetchedAt).toLocaleTimeString() : "—"} · no synthetic live scores
+        </p>
       </Card>
     </section>
-  );
-}
-
-function Team({ name, short }: { name: string; short: string }) {
-  return (
-    <div className="flex flex-col items-center gap-2">
-      <div className="flex h-16 w-16 items-center justify-center rounded-full border-2 border-border bg-soft text-sm font-black text-navy">
-        {short}
-      </div>
-      <span className="text-sm font-bold text-navy">{name}</span>
-    </div>
-  );
-}
-
-function Stat({ label, value, note }: { label: string; value: React.ReactNode; note?: string }) {
-  return (
-    <div>
-      <p className="text-[11px] font-semibold text-muted-foreground">{label}</p>
-      <p className="num text-3xl font-black text-navy">{value}</p>
-      {note && <p className="text-xs text-muted-foreground">{note}</p>}
-    </div>
   );
 }
 

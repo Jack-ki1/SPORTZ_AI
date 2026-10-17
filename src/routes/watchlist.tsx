@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { Shell, Wrap } from "@/components/sportz/shell";
-import { Watchlist, Copilot } from "@/components/sportz/bottom";
+import { Shell } from "@/components/sportz/shell";
+import { WatchlistWorkspace } from "@/components/sportz/workspaces";
 
 export const Route = createFileRoute("/watchlist")({
   head: () => ({
@@ -14,11 +14,8 @@ export const Route = createFileRoute("/watchlist")({
     ],
   }),
   component: () => (
-    <Shell title="Watchlist" sub="Follow teams, players, drivers and races.">
-      <Wrap cols="lg:grid-cols-2">
-        <Watchlist />
-        <Copilot />
-      </Wrap>
+    <Shell>
+      <WatchlistWorkspace />
     </Shell>
   ),
 });

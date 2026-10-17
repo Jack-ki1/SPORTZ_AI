@@ -15,17 +15,16 @@ import {
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "SPORTZ_AI — AI That Understands The Game" },
+      { title: "SPORTZ_AI — Sports Data Made Clear" },
       {
         name: "description",
         content:
-          "AI predictions, explanations, simulations and live intelligence across Formula 1, NBA, EPL, NFL and MLB.",
+          "Scoreboards and transparent baseline analysis across Formula 1, NBA, EPL, NFL and MLB.",
       },
-      { property: "og:title", content: "SPORTZ_AI — AI That Understands The Game" },
+      { property: "og:title", content: "SPORTZ_AI — Sports Data Made Clear" },
       {
         property: "og:description",
-        content:
-          "Five sports. One intelligence layer. Predictions, explainable AI, simulations and backtests.",
+        content: "Five sports. Provider scoreboards and transparent exploratory analysis.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
