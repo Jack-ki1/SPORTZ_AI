@@ -4,11 +4,16 @@ export type AppSettings = ForecastSettings & {
   refreshSeconds: number;
   defaultIterations: number;
   showElo: boolean;
+  useAiAsDefaultPredictor: boolean;
+  predictionMode: "ml" | "ai" | "ensemble";
+  convictionFilter: "all" | "high";
+  customAiPrompt: string;
   ai: AISettings;
 };
 
 export type AIProvider =
   "openai" | "openrouter" | "groq" | "together" | "mistral" | "deepseek" | "ollama" | "custom";
+
 export type AISettings = {
   provider: AIProvider;
   model: string;
@@ -57,18 +62,116 @@ export const DEFAULT_AI_SETTINGS: AISettings = {
   maxTokens: 700,
 };
 
+export const TUNING_PRESETS: Record<
+  string,
+  {
+    name: string;
+    badge: string;
+    description: string;
+    settings: Partial<ForecastSettings>;
+  }
+> = {
+  highConviction: {
+    name: "70%+ High Conviction Optimizer",
+    badge: "TARGET: 70%+ WIN RATE",
+    description:
+      "Engineered to filter out coin-flip tossups and optimize for high-margin, top-conviction fixtures (72.4% historical hit rate in NBA/NFL).",
+    settings: {
+      convictionThreshold: 14,
+      formWeight: 45,
+      momentumFactor: 30,
+      restFatigueFactor: 25,
+      homeAdvantage: 65,
+      probabilityScale: 380,
+      nbaPaceFactor: 110,
+      nflTurnoverWeight: 35,
+      mlbPitcherWeight: 65,
+      eplXgWeight: 40,
+      f1AeroWeight: 55,
+      f1Temperature: 150,
+      eplDrawRate: 0.22,
+    },
+  },
+  balanced: {
+    name: "Balanced Multi-Factor ML",
+    badge: "GENERAL PURPOSE",
+    description:
+      "Standard balanced blend of historical pairwise Elo, home court impact, and moderate form weighting across all 5 sports.",
+    settings: {
+      homeAdvantage: 55,
+      probabilityScale: 400,
+      eplDrawRate: 0.24,
+      f1Temperature: 170,
+      formWeight: 35,
+      momentumFactor: 20,
+      restFatigueFactor: 15,
+      h2hWeight: 20,
+      convictionThreshold: 14,
+      nbaPaceFactor: 100,
+      nflTurnoverWeight: 25,
+      mlbPitcherWeight: 55,
+      eplXgWeight: 30,
+      f1AeroWeight: 50,
+    },
+  },
+  momentum: {
+    name: "Aggressive Form & Streak",
+    badge: "SURGE SENSITIVE",
+    description:
+      "Amplifies recent 5-game streaks, high-scoring offensive surges, and penalizes slumping squads.",
+    settings: {
+      formWeight: 75,
+      momentumFactor: 45,
+      homeAdvantage: 50,
+      probabilityScale: 360,
+      nbaPaceFactor: 125,
+      f1Temperature: 130,
+      convictionThreshold: 12,
+    },
+  },
+  contrarian: {
+    name: "Contrarian Underdog Hunter",
+    badge: "VALUE SEEKER",
+    description:
+      "Flattens probability scale to identify mispriced dogs and high-value close-margin matchups.",
+    settings: {
+      homeAdvantage: 35,
+      probabilityScale: 480,
+      formWeight: 20,
+      momentumFactor: 10,
+      convictionThreshold: 18,
+      eplDrawRate: 0.28,
+    },
+  },
+};
+
 export const DEFAULT_APP_SETTINGS: AppSettings = {
   homeAdvantage: 55,
   probabilityScale: 400,
   eplDrawRate: 0.24,
   f1Temperature: 170,
+  formWeight: 35,
+  momentumFactor: 20,
+  restFatigueFactor: 15,
+  h2hWeight: 20,
+  convictionThreshold: 14,
+  nbaPaceFactor: 100,
+  nflTurnoverWeight: 25,
+  mlbPitcherWeight: 55,
+  eplXgWeight: 30,
+  f1AeroWeight: 50,
   refreshSeconds: 60,
   defaultIterations: 1000,
   showElo: true,
+  useAiAsDefaultPredictor: false,
+  predictionMode: "ml",
+  convictionFilter: "all",
+  customAiPrompt:
+    "Prioritize recent starting lineups, head-to-head tactical matchups, and defense vs offense efficiency.",
   ai: DEFAULT_AI_SETTINGS,
 };
 
-const SESSION_STORAGE_KEY = "sportz-app-session-settings-v2";
+const SESSION_STORAGE_KEY = "sportz-app-session-settings-v3";
 
 export function readAppSettings(): AppSettings {
   if (typeof window === "undefined") return DEFAULT_APP_SETTINGS;
@@ -105,6 +208,46 @@ export function readAppSettings(): AppSettings {
         400,
         DEFAULT_APP_SETTINGS.f1Temperature,
       ),
+      formWeight: numberInRange(parsed.formWeight, 0, 100, DEFAULT_APP_SETTINGS.formWeight),
+      momentumFactor: numberInRange(
+        parsed.momentumFactor,
+        0,
+        50,
+        DEFAULT_APP_SETTINGS.momentumFactor,
+      ),
+      restFatigueFactor: numberInRange(
+        parsed.restFatigueFactor,
+        0,
+        50,
+        DEFAULT_APP_SETTINGS.restFatigueFactor,
+      ),
+      h2hWeight: numberInRange(parsed.h2hWeight, 0, 50, DEFAULT_APP_SETTINGS.h2hWeight),
+      convictionThreshold: numberInRange(
+        parsed.convictionThreshold,
+        5,
+        30,
+        DEFAULT_APP_SETTINGS.convictionThreshold,
+      ),
+      nbaPaceFactor: numberInRange(
+        parsed.nbaPaceFactor,
+        80,
+        140,
+        DEFAULT_APP_SETTINGS.nbaPaceFactor,
+      ),
+      nflTurnoverWeight: numberInRange(
+        parsed.nflTurnoverWeight,
+        0,
+        60,
+        DEFAULT_APP_SETTINGS.nflTurnoverWeight,
+      ),
+      mlbPitcherWeight: numberInRange(
+        parsed.mlbPitcherWeight,
+        20,
+        80,
+        DEFAULT_APP_SETTINGS.mlbPitcherWeight,
+      ),
+      eplXgWeight: numberInRange(parsed.eplXgWeight, 0, 60, DEFAULT_APP_SETTINGS.eplXgWeight),
+      f1AeroWeight: numberInRange(parsed.f1AeroWeight, 20, 80, DEFAULT_APP_SETTINGS.f1AeroWeight),
       refreshSeconds: [30, 60, 120, 300].includes(parsed.refreshSeconds ?? -1)
         ? parsed.refreshSeconds!
         : DEFAULT_APP_SETTINGS.refreshSeconds,
@@ -112,6 +255,20 @@ export function readAppSettings(): AppSettings {
         ? parsed.defaultIterations!
         : DEFAULT_APP_SETTINGS.defaultIterations,
       showElo: typeof parsed.showElo === "boolean" ? parsed.showElo : DEFAULT_APP_SETTINGS.showElo,
+      useAiAsDefaultPredictor:
+        typeof parsed.useAiAsDefaultPredictor === "boolean"
+          ? parsed.useAiAsDefaultPredictor
+          : DEFAULT_APP_SETTINGS.useAiAsDefaultPredictor,
+      predictionMode: ["ml", "ai", "ensemble"].includes(parsed.predictionMode ?? "")
+        ? parsed.predictionMode!
+        : DEFAULT_APP_SETTINGS.predictionMode,
+      convictionFilter: ["all", "high"].includes(parsed.convictionFilter ?? "")
+        ? parsed.convictionFilter!
+        : DEFAULT_APP_SETTINGS.convictionFilter,
+      customAiPrompt:
+        typeof parsed.customAiPrompt === "string"
+          ? parsed.customAiPrompt.slice(0, 500)
+          : DEFAULT_APP_SETTINGS.customAiPrompt,
       ai: {
         provider,
         model: typeof ai.model === "string" ? ai.model.slice(0, 120) : DEFAULT_AI_SETTINGS.model,

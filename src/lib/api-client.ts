@@ -1,6 +1,18 @@
 import type { SportKey } from "@/lib/sportz-data";
 import type { AISettings } from "@/lib/app-settings";
 
+export type CustomAiPrediction = {
+  predictedWinner: string;
+  probabilities: number[];
+  confidenceScore: number;
+  convictionTier: string;
+  projectedScore?: string;
+  keyFactors?: string[];
+  reasoning: string;
+  predictedAt?: string;
+  modelUsed?: string;
+};
+
 export type ScoreboardEvent = {
   id: string;
   sport: SportKey;
@@ -21,6 +33,12 @@ export type ScoreboardEvent = {
   }[];
   baseline: number[] | null;
   drawProbability?: number | null;
+  confidence?: number | null;
+  convictionTier?: "high" | "moderate" | "lean";
+  projectedSpread?: string | null;
+  fairOdds?: { home: string; away: string } | null;
+  factors?: string[];
+  customAiPrediction?: CustomAiPrediction | null;
   model: string;
 };
 
@@ -38,6 +56,16 @@ export type ForecastSettings = {
   probabilityScale: number;
   eplDrawRate: number;
   f1Temperature: number;
+  formWeight: number;
+  momentumFactor: number;
+  restFatigueFactor: number;
+  h2hWeight: number;
+  convictionThreshold: number;
+  nbaPaceFactor: number;
+  nflTurnoverWeight: number;
+  mlbPitcherWeight: number;
+  eplXgWeight: number;
+  f1AeroWeight: number;
 };
 
 export type LeagueRow = {
@@ -157,4 +185,55 @@ export function askSportsCopilot({
     method: "POST",
     body: JSON.stringify(data),
   });
+}
+
+export function predictGameWithAi({
+  data,
+}: {
+  data: {
+    sport: SportKey;
+    event: ScoreboardEvent;
+    ai: AISettings;
+    customPrompt?: string;
+  };
+}) {
+  return request<CustomAiPrediction>("/predict-game-ai", {
+    method: "POST",
+    body: JSON.stringify(data),
+  });
+}
+
+export function testAiConnection({
+  data,
+}: {
+  data: {
+    ai: AISettings;
+  };
+}) {
+  return request<{ ok: boolean; latencyMs: number; model: string; provider: string }>("/test-ai", {
+    method: "POST",
+    body: JSON.stringify(data),
+  });
+}
+
+export function getModelsMetadata() {
+  return request<{
+    artifactVersion: string;
+    generatedAt: string;
+    models: Record<string, unknown>;
+    highConvictionBenchmarks: Record<
+      string,
+      {
+        target: string;
+        accuracy?: number;
+        podiumAccuracy?: number;
+        topMatchupAccuracy?: number;
+        brierScore?: number;
+        threshold: string;
+        validationSample: string;
+        description: string;
+      }
+    >;
+    defaultHyperparameters: ForecastSettings;
+  }>("/models");
 }
