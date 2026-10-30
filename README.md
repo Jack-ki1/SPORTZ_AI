@@ -1,5 +1,14 @@
 # SPORTZ_AI — Multi-Sport Data, Machine Learning Forecast Engine & AI Copilot
 
+> [!IMPORTANT]
+> **ACADEMIC & STUDENT PROJECT NOTICE — LEGAL DISCLAIMER**
+> 
+> SPORTZ_AI was built strictly for **fun, learning, portfolio demonstration, and academic experimentation as a student school project**. It is an independent experimental simulation exploring machine learning algorithms and user-driven AI integrations in sports analytics. It is **NOT** a commercial product, financial service, or sportsbook.
+> 
+> - **No Gambling, Betting, or Financial Advice**: All win probabilities, projected spreads, fair odds, and AI evaluations are hypothetical mathematical calculations generated solely for testing purposes. They are not instructions, betting tips, or guarantees of any real-world outcome. Under no circumstances should this software be used for real-money wagering. The student author assumes zero legal liability or responsibility for any real-world decisions or financial losses.
+> - **Non-Affiliation Notice**: This project is not affiliated with, endorsed by, sponsored by, or associated with Formula 1 (FIA / Formula One Licensing B.V.), the National Basketball Association (NBA), the English Premier League (The Football Association Premier League Limited), the National Football League (NFL), Major League Baseball (MLB), ESPN, or any team, club, or athlete. All trademarks, league names, team logos, and player names belong strictly to their respective owners and are referenced solely under nominative fair use for descriptive, academic identification purposes.
+> - **Warranty Disclaimer**: This software and third-party data feeds are provided &ldquo;AS IS&rdquo; and &ldquo;AS AVAILABLE&rdquo; without warranty of any kind, express or implied.
+
 SPORTZ_AI is a high-performance sports analytics, forecasting, and data exploration platform covering **Formula 1 (F1), NBA Basketball, English Premier League (EPL), NFL Football, and MLB Baseball**.
 
 The platform is architected around two core capabilities:
@@ -741,10 +750,39 @@ The following architectural enhancements are recommended for subsequent contribu
 
 ---
 
+## 16. Legal Disclaimer, Student Project Notice & Limitation of Liability
+
+### 1. Non-Commercial Academic & Student Experiment
+SPORTZ_AI was conceived, designed, and constructed strictly as a **non-commercial student experiment for fun, educational exploration, portfolio demonstration, and coursework testing**. It is not a commercial product, betting platform, investment consultancy, or licensed sports advisory service.
+
+### 2. Express Denial of Gambling / Wagering Advice
+The software, its forecasting algorithms, and any integrated AI responses are provided strictly for experimental and entertainment purposes. 
+- **NO BETTING ADVICE**: Win probabilities, fair odds, projected point spreads, and tactical rationales represent hypothetical mathematical calculations from public historical data. They do not constitute betting instructions, recommendations, or guarantees of any future sporting result.
+- **ZERO FINANCIAL RELIANCE**: Users agree not to rely on any calculation or AI-generated output for real-money wagering, betting, or financial speculation. 
+- **LIMITATION OF LIABILITY**: To the maximum extent permitted by applicable law, in no event shall the student author, developers, contributors, or affiliated educational institutions be held legally liable or financially responsible for any claim, demand, action, loss, injury, or damages (whether direct, indirect, consequential, punitive, or incidental, including but not limited to loss of funds, gambling losses, or data corruption) arising out of or in connection with the access, use, testing, or inability to use this software.
+
+### 3. Non-Affiliation & Nominative Fair Use Trademark Notice
+SPORTZ_AI is an independent, non-commercial educational project. It is **NOT** affiliated with, endorsed by, sponsored by, or officially associated with:
+- **Formula 1** (FIA / Formula One Licensing B.V. / Formula One Group)
+- **National Basketball Association (NBA)** (NBA Properties, Inc.)
+- **English Premier League (EPL)** (The Football Association Premier League Limited)
+- **National Football League (NFL)** (NFL Properties LLC)
+- **Major League Baseball (MLB)** (MLB Advanced Media, L.P.)
+- **ESPN** (ESPN Enterprises, Inc. / The Walt Disney Company)
+- Any professional team, racing constructor, club, league official, or individual athlete.
+
+All trademarks, league designations, team names, driver names, player names, and associated logos belong exclusively to their respective intellectual property owners. Their reference in this project is strictly nominative and descriptive, intended solely to identify real-world competitive fixtures for academic machine learning simulation under the fair use doctrines of relevant jurisdictions.
+
+### 4. "AS IS" Warranty Disclaimer
+THE SOFTWARE, ITS DATA FEEDS, AND DERIVED FORECASTS ARE PROVIDED "AS IS" AND "AS AVAILABLE", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE IMPLIED WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, TITLE, AND NON-INFRINGEMENT.
+
+---
+
 ## License & Attribution
 
-SPORTZ_AI utilizes public and open sports data archives:
+SPORTZ_AI is open-sourced under the terms of the [MIT License](LICENSE) with express educational and non-commercial disclaimers.
 
+Historical datasets and live endpoints are accessed courtesy of:
 - Formula 1 data courtesy of [Jolpica F1 API](https://api.jolpi.ca/ergast/f1/) (Ergast compatible).
 - English Premier League historical data courtesy of [OpenFootball England](https://github.com/openfootball/england) (CC0 1.0 Public Domain).
 - NFL historical schedule data courtesy of [nflverse](https://github.com/nflverse/nfldata) (CC BY 4.0).

@@ -4,6 +4,7 @@ import {
   Bot,
   Cloud,
   Database,
+  GraduationCap,
   Layers,
   ShieldCheck,
   Star,
@@ -625,7 +626,7 @@ export function Footer() {
     ["4", "LEARN", "Get smarter with every game", "grad-nfl"],
   ];
   return (
-    <footer className="mt-10 bg-soft">
+    <footer className="mt-10 border-t border-border bg-soft">
       <div className="mx-auto grid max-w-[1560px] items-center gap-6 px-4 py-10 md:px-8 lg:grid-cols-[1fr_3fr_1fr]">
         <div>
           <Logo />
@@ -661,10 +662,63 @@ export function Footer() {
           </Link>
         </div>
       </div>
-      <p className="pb-6 text-center text-xs font-semibold text-muted-foreground">
-        Designed for 2026 · Built to scale beyond five sports · Predictions are probabilistic and
-        for analytics only. Live scoreboard data is shown only when reported by the provider.
-      </p>
+
+      {/* Prominent Legal Disclaimer & Academic Student Project Notice */}
+      <div className="mx-auto max-w-[1560px] px-4 pb-8 md:px-8">
+        <div className="rounded-2xl border border-border/80 bg-card p-5 text-xs text-muted-foreground shadow-xs">
+          <div className="flex items-center gap-2 font-black uppercase tracking-wider text-navy">
+            <GraduationCap className="h-4 w-4 text-primary" />
+            <span>Academic Project Notice &amp; Legal Disclaimer</span>
+          </div>
+          <div className="mt-3 grid gap-3.5 leading-relaxed md:grid-cols-2">
+            <div>
+              <p className="font-bold text-navy">Educational &amp; Student Project Purpose:</p>
+              <p className="mt-0.5">
+                SPORTZ_AI is a non-commercial student experiment built strictly for educational,
+                learning, portfolio demonstration, and experimental research testing purposes. It
+                was created for fun as a school project to explore sports machine learning and
+                user-driven AI integrations. It is NOT a commercial enterprise, financial service,
+                or licensed wagering platform.
+              </p>
+            </div>
+            <div>
+              <p className="font-bold text-navy">
+                No Betting or Financial Advice (Zero Wagering Reliance):
+              </p>
+              <p className="mt-0.5">
+                This software does not provide sports betting, gambling, financial, or investment
+                advice. All win probabilities, projected spreads, fair odds, and AI match analyses
+                are hypothetical mathematical simulations generated for testing purposes only. They
+                are not instructions, tips, or guarantees of any real-world sports outcome. Do not
+                use this software for real-money wagering. The student author assumes zero liability
+                or legal responsibility for any actions or financial losses resulting from the use
+                of this software.
+              </p>
+            </div>
+            <div className="border-t border-border/60 pt-2.5 md:col-span-2">
+              <p className="font-bold text-navy">
+                Non-Affiliation &amp; Nominative Fair Use Trademark Disclaimer:
+              </p>
+              <p className="mt-0.5">
+                SPORTZ_AI is an independent academic project and is NOT affiliated with, endorsed
+                by, sponsored by, or associated with Formula 1 (FIA / Formula One Licensing B.V.),
+                the National Basketball Association (NBA), the English Premier League (The Football
+                Association Premier League Limited), the National Football League (NFL), Major
+                League Baseball (MLB), ESPN, or any participating team, club, or athlete. All
+                trademarks, team names, and logos belong strictly to their respective owners and are
+                referenced solely under nominative fair use for descriptive, academic identification
+                purposes. This software and data feeds are provided &ldquo;AS IS&rdquo; and &ldquo;AS
+                AVAILABLE&rdquo; without warranties of any kind.
+              </p>
+            </div>
+          </div>
+        </div>
+        <p className="mt-4 text-center text-[11px] font-medium text-muted-foreground">
+          &copy; {new Date().getFullYear()} SPORTZ_AI &middot; Built for fun &amp; academic testing
+          &middot; Non-commercial student project &middot; All trademarks belong to their respective
+          holders.
+        </p>
+      </div>
     </footer>
   );
 }
