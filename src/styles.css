@@ -181,4 +181,26 @@
   h3 {
     letter-spacing: -0.02em;
   }
+
+  /* Mobile overflow fix: a bare `grid` has one implicit `auto` column, which grows to the
+     widest child (tables, nowrap rows) and pushes the whole page wider than the phone.
+     minmax(0,1fr) lets the column shrink to the screen. Any `grid-cols-*` utility still wins. */
+  .grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .grid > * {
+    min-width: 0;
+  }
+}
+
+/* Phones: tighter table cells so data tables fit the screen instead of scrolling sideways. */
+@media (max-width: 639px) {
+  table th,
+  table td {
+    padding-left: 0.375rem;
+    padding-right: 0.375rem;
+  }
+  table {
+    font-size: 0.8125rem;
+  }
 }

@@ -1352,7 +1352,7 @@ export function LiveWorkspace() {
                         </td>
                         <td className="p-2">
                           <b className="text-navy">{row.name}</b>
-                          <span className="ml-2 text-[10px] text-muted-foreground">
+                          <span className="block text-[10px] text-muted-foreground sm:ml-2 sm:inline">
                             {row.group}
                           </span>
                         </td>

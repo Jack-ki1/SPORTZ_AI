@@ -707,8 +707,8 @@ export function Footer() {
                 League Baseball (MLB), ESPN, or any participating team, club, or athlete. All
                 trademarks, team names, and logos belong strictly to their respective owners and are
                 referenced solely under nominative fair use for descriptive, academic identification
-                purposes. This software and data feeds are provided &ldquo;AS IS&rdquo; and &ldquo;AS
-                AVAILABLE&rdquo; without warranties of any kind.
+                purposes. This software and data feeds are provided &ldquo;AS IS&rdquo; and
+                &ldquo;AS AVAILABLE&rdquo; without warranties of any kind.
               </p>
             </div>
           </div>
